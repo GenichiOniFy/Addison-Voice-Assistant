@@ -10,11 +10,10 @@ from elevenlabs import play
 import time
 from os import system
 
-with open('server.py', 'r') as file:
+with open('/home/genichi/Yandex.Disk/Addison-Voice-Assistant/server.py', 'r') as file:
     content = file.read()
 
-
-settings = [0]
+settings = [True]
 
 def START():
     RATE = 16000  # Частота дискретизации
@@ -56,7 +55,7 @@ def START():
     while True:
         fl=0
         try:
-            input_file=open("input.file")
+            input_file=open("/home/genichi/Yandex.Disk/Addison-Voice-Assistant/input.file")
             text=input_file.read()
             fl=1
         except:
@@ -86,24 +85,28 @@ def START():
                     mes.append({"role":"assistant", "content":"Обновляю код, хозяин. Пожалуйста, подождите... (команды git добавлены, закоммичены и отправлены на сервер)... Код успешно обновлён!"})
 
                 elif len(text)>1:
+                    
                     mes.append({"role":"user", "content":f"{text}"})
                     chat_completion = client.chat.completions.create(messages=mes,model="llama-3.2-90b-text-preview", temperature = 1, max_tokens=1024, top_p=1, stop=None)
                     response = chat_completion.choices[0].message.content
+                    
+                    print(response)
+                    
                     if settings[0]:
-                        audio = client_voice.generate(text = response, voice= "Nicole", model="eleven_multilingual_v2")
-                        play(audio)
+                        audio_voice = client_voice.generate(text = response, voice= "Nicole", model="eleven_turbo_v2_5")
+                        play(audio_voice)
                     mes.append({"role":"assistant", "content":response})
                     print("Эддисон:",response,"\n")
                 t=time.time()
         if fl:
             input_file.close()
-            system("rm input.file")
+            system("rm /home/genichi/Yandex.Disk/Addison-Voice-Assistant/input.file")
     # Остановка и закрытие потоков
     stream.stop_stream()
     stream.close()
     audio.terminate()
     input_file.close()
-    system("rm input.file")
+    system("rm /home/genichi/Yandex.Disk/Addison-Voice-Assistant/input.file")
     #print(mes)
 
 START()
