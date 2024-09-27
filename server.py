@@ -78,6 +78,13 @@ def START():
                     system('poweroff')
                 elif "стоп" in text or " пока" in text:
                     break
+                elif "обнови свой код" in text:
+                    system("git add *")
+                    system('git commit -m "update by Addy"')
+                    system("git push")
+                    mes.append({"role":"user", "content":text})
+                    mes.append({"role":"assistant", "content":"Обновляю код, хозяин. Пожалуйста, подождите... (команды git добавлены, закоммичены и отправлены на сервер)... Код успешно обновлён!"})
+
                 elif len(text)>1:
                     mes.append({"role":"user", "content":f"{text}"})
                     chat_completion = client.chat.completions.create(messages=mes,model="llama-3.2-90b-text-preview", temperature = 1, max_tokens=1024, top_p=1, stop=None)
