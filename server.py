@@ -27,18 +27,18 @@ nlp = spacy.load("ru_core_news_sm")
 
 
 
-porcupine = pvporcupine.create(
-    access_key="agqOkA4/tqSDr25RFY0f4zDh/IiLR55y1cVu929QYKlTwyCKmg0dgg==",
-    keyword_paths=['/home/genichi/Yandex.Disk/Antony-Voice-Assistant/antony_en_linux_v3_0_0.ppn'],
-    sensitivities=[1]
-)
+porcupine = pvporcupine.create( #+
+    access_key="agqOkA4/tqSDr25RFY0f4zDh/IiLR55y1cVu929QYKlTwyCKmg0dgg==", #+
+    keyword_paths=['/home/genichi/Yandex.Disk/Antony-Voice-Assistant/antony_en_linux_v3_0_0.ppn'], #+
+    sensitivities=[1] #+
+) #+
 
 #TTS_set
-modelTTS, _ = torch.hub.load(repo_or_dir='snakers4/silero-models',
-                          model='silero_tts',
-                          language='ru',
-                          speaker='v4_ru')
-modelTTS.to(torch.device('cpu'))
+modelTTS, _ = torch.hub.load(repo_or_dir='snakers4/silero-models', #+
+                          model='silero_tts', #+
+                          language='ru', #+
+                          speaker='v4_ru') #+
+modelTTS.to(torch.device('cpu')) #+
 
 
 
@@ -60,8 +60,8 @@ def va_speak(what: str):
 def START():
     #vosk
     #model = Model("/home/genichi/.cache/vosk/vosk-model-ru-0.42")
-    model = Model(lang="ru")
-    rec = KaldiRecognizer(model, 16000)
+    model = Model(lang="ru") #+
+    rec = KaldiRecognizer(model, 16000) #+
 
 
     recorder = PvRecorder(device_index=-1, frame_length=porcupine.frame_length)
@@ -95,10 +95,11 @@ def START():
         
         ]
 
-    client = Groq(api_key="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")
+    client = Groq(api_key="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") #+
 
     # Запись и обработка
     t=0
+    
     while True:
         fl=0
         try:
@@ -128,26 +129,23 @@ def START():
                     print(text)
                 if len(text) > 0 or fl==1:
                     print("Я:   ", text)            
-                    if "что у меня за система" in text:
-                        mes.append({"role":"user", "content":text})
-                        mes.append({"role":"assistant", "content":"Я выполнил neofetch в твоей системе"})
-                        system('neofetch')
-                    elif "выключи ноутбук" in text:
-                        system('poweroff')
-                    elif "стоп" in text or " пока" in text:
-                        break
-                    elif "обнови свой код" in text:
-                        system("git add *")
-                        system('git commit -m "update by Addy"')
-                        system("git push")
-                        mes.append({"role":"user", "content":text})
-                        mes.append({"role":"assistant", "content":"Обновляю код, хозяин. Пожалуйста, подождите... (команды git добавлены, закоммичены и отправлены на сервер)... Код успешно обновлён!"})
+                    if "что у меня за система" in text: #+
+                        mes.append({"role":"user", "content":text}) #+ 
+                        mes.append({"role":"assistant", "content":"Я выполнил neofetch в твоей системе"}) #+
+                        system('neofetch') #+
+                    elif "выключи ноутбук" in text: #+
+                        system('poweroff') #+
+                    elif "обнови свой код" in text: #+
+                        system("git add *") #+
+                        system('git commit -m "update by Addy"') #+
+                        system("git push") #+
+                        mes.append({"role":"user", "content":text}) #+
+                        mes.append({"role":"assistant", "content":"Обновляю код, хозяин. Пожалуйста, подождите... (команды git добавлены, закоммичены и отправлены на сервер)... Код успешно обновлён!"}) #+
 
-                    elif len(text)>1:
-                    
-                        mes.append({"role":"user", "content":f"{text}"})
-                        chat_completion = client.chat.completions.create(messages=mes,model="llama-3.2-90b-text-preview", temperature = 1, max_tokens=1024, top_p=1, stop=None)
-                        response = chat_completion.choices[0].message.content
+                    elif len(text)>1: #+
+                        mes.append({"role":"user", "content":f"{text}"})#+
+                        chat_completion = client.chat.completions.create(messages=mes,model="llama-3.2-90b-text-preview", temperature = 1, max_tokens=1024, top_p=1, stop=None) #+
+                        response = chat_completion.choices[0].message.content #+
                         print("Энтони:",response,"\n")
                         if settings[0]:
                             va_speak(response)
@@ -156,7 +154,7 @@ def START():
                         for match in matches:
                             print(match)
                             system(f'{match}')
-                        mes.append({"role":"assistant", "content":response})
+                        mes.append({"role":"assistant", "content":response}) #+
                     t=time.time()
                 recorder.start()
                 break
