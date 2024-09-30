@@ -7,6 +7,7 @@ import data.config as config
 import struct
 from data.class_voice_assistant import voice_assistant
 import time
+import subprocess
 import re
 import sounddevice as sd
 from os import system
@@ -33,7 +34,7 @@ def initialization():
 
     #INIT SERVER-SOCKET
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('0.0.0.0', 1351))
+    sock.bind(('0.0.0.0', 1352))
     sock.listen()
 
     with sock:
@@ -49,7 +50,10 @@ def bot_system(res):
     matches = re.findall(pattern, res)
     for match in matches:
         command = f"{match}"[1:-1]
-        system(command)
+        result_command=subprocess.check_output(command,shell=True)
+        conn.send(result_command)
+        antony.temp_memory.append({"role":"assistant","content":f"Выполнил команду: {result_command.decode('utf-8')}"})
+        
 
 
 while True:
