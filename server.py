@@ -13,7 +13,7 @@ import sounddevice as sd
 from os import system
 
 
-antony = None
+anthony = None
 conn = None
 pattern = r'system\((.*?)\)'
 
@@ -25,11 +25,11 @@ def initialization():
     #INIT GROQ
     llm = Groq(api_key=config.GROQ_api_key)
 
-    #CREAT ANTONY
-    global antony
+    #CREAT ANTHONY
+    global anthony
     important_memory = json.load(open('data/memory.json', 'r', encoding='utf-8'))
     important_memory.append({"role":"user","content":f'Вот твой исходный код: {open("server.py", "r", encoding="utf-8").read()}'})
-    antony = voice_assistant(llm, "antony", "ru",important_memory=important_memory)
+    anthony = voice_assistant(llm, "anthony", "ru",important_memory=important_memory)
 
 
     #INIT SERVER-SOCKET
@@ -52,12 +52,12 @@ def bot_system(res):
         command = f"{match}"[1:-1]
         result_command=subprocess.check_output(command,shell=True)
         conn.send(result_command)
-        antony.temp_memory.append({"role":"assistant","content":f"Выполнил команду: {result_command.decode('utf-8')}"})
+        anthony.temp_memory.append({"role":"assistant","content":f"Выполнил команду: {result_command.decode('utf-8')}"})
         
 
 
 while True:
-    response = antony.think(conn.recv(4096).decode('utf-8'))
+    response = anthony.think(conn.recv(4096).decode('utf-8'))
     conn.send(response.encode('utf-8'))
     bot_system(response)
     

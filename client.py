@@ -10,7 +10,7 @@ def initialization():
     #Init pvporcupine КЛИЕНТ
     porcupine = pvporcupine.create(
         access_key=data.config.PORCUPINE_api_key,
-        keyword_paths=['/home/genichi/Yandex.Disk/Antony-Voice-Assistant/data/antony_en_linux_v3_0_0.ppn'],
+        keyword_paths=['/home/genichi/Yandex.Disk/Anthony-Voice-Assistant/data/anthony_en_linux_v3_0_0.ppn'],
         sensitivities=[1])
 
     #Init TTS КЛИЕНТ
