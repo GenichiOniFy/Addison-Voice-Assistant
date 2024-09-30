@@ -33,7 +33,7 @@ def initialization():
 
     #INIT SERVER-SOCKET
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('0.0.0.0', 1348))
+    sock.bind(('0.0.0.0', 1351))
     sock.listen()
 
     with sock:
@@ -48,7 +48,8 @@ initialization()
 def bot_system(res):
     matches = re.findall(pattern, res)
     for match in matches:
-        system(f'{match}')
+        command = f"{match}"[1:-1]
+        system(command)
 
 
 while True:
