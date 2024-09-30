@@ -1,0 +1,2 @@
+GROQ_api_key = "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"
+PORCUPINE_api_key = "agqOkA4/tqSDr25RFY0f4zDh/IiLR55y1cVu929QYKlTwyCKmg0dgg=="
