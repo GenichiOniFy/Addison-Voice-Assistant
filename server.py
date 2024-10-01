@@ -43,7 +43,7 @@ def initialization():
 
     #INIT SERVER-SOCKET
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('0.0.0.0', 1369))
+    sock.bind(('0.0.0.0', 1372))
     sock.listen()
 
     
@@ -68,12 +68,31 @@ def bot_system(res):
     fl=0
     for match in matches:
         command = f"{match}"[1:-1]
-        conn.send(f'Мне выполнить: {command}?'.encode('utf-8'))
+        question = f'Мне выполнить: {command}?'
+        conn.send(question.encode('utf-8'))
+        anthony.temp_memory.append(
+            {
+                "role":"assistant",
+                f"content":question
+            })
         ans = conn.recv(4096).decode('utf-8').lower()
+        anthony.temp_memory.append(
+            {
+                "role":"user",
+                f"content":ans
+            }
+        )
         if "да" in ans or "давай" in ans or "выполни" in ans:
             result_command=subprocess.check_output(command,shell=True)
             conn.send(result_command+b'COMMAND')
-            anthony.temp_memory.append({"role":"assistant","content":f"Выполнил команду: {result_command.decode('utf-8')}"})
+            anthony.temp_memory.append(
+                {
+                    "role":"assistant","content":f"Выполнил команду: {result_command.decode('utf-8')}"
+                })
+        else:
+            response = anthony.think(ans).encode('utf-8')
+            conn.send(response)
+            break
         fl=1
     if fl:
         return 1
