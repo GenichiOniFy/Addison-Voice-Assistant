@@ -25,7 +25,7 @@ def initialization():
     #Init pvporcupine КЛИЕНТ
     porcupine = pvporcupine.create(
         access_key=data.config.PORCUPINE_api_key,
-        keyword_paths=['./data/anthony_en_windows_v3_0_0.ppn'],
+        keyword_paths=['./data/anthony_en_linux_v3_0_0.ppn'],
         sensitivities=[1])
 
     #INIT VOSK
@@ -35,13 +35,13 @@ def initialization():
     recorder = PvRecorder(device_index=-1, frame_length=porcupine.frame_length)
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(('192.168.0.101', 1354))
+    sock.connect(('0.0.0.0', 1358))
 
     recorder.start()
 
 initialization()
 
-def getting_voice():
+def getting_data():
     global sock
     voice_data=bytearray()
     while True:

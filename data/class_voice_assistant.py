@@ -11,9 +11,11 @@ class voice_assistant:
         print("\nThe voice assistant has been successfully created")
     def think(self, request):
         if len(request)>0:
+            print(f"Клиент: {request}")
             self.temp_memory.append({"role":"user", "content":f"{request}"})
             chat_completion = self.llm.chat.completions.create(messages=self.important_memory+self.temp_memory,model="llama-3.2-90b-text-preview", temperature = 1, max_tokens=1024, top_p=1, stop=None)
             response = chat_completion.choices[0].message.content
+            print(f"Энтони: {response}")
             self.temp_memory.append({"role":"assistant", "content":response})
             return response+'\n'
     def speak(self, data):

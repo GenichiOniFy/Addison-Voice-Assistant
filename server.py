@@ -7,6 +7,8 @@ import struct
 from data.class_voice_assistant import voice_assistant
 import time
 import subprocess
+import data.server_telegram as tg_bot
+import threading
 import torch
 import re
 import sounddevice as sd
@@ -16,6 +18,9 @@ from os import system
 anthony = None
 conn = None
 pattern = r'system\((.*?)\)'
+
+def init_telegram_bot():
+    tg_bot.init(config.TELEGRAM_token)
 
 def initialization():
 
@@ -38,14 +43,22 @@ def initialization():
 
     #INIT SERVER-SOCKET
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('0.0.0.0', 1354))
+    sock.bind(('0.0.0.0', 1363))
     sock.listen()
+
+    
 
     with sock:
         print("Сервер ожидает соединения...")
         global conn
+        bot_thread=threading.Thread(target=init_telegram_bot)
+        bot_thread.start()
+        
         conn, addr = sock.accept()
         print(f"Подключен клиент: {addr}")
+    
+    
+    
 
 
 initialization()
@@ -55,7 +68,7 @@ def bot_system(res):
     for match in matches:
         command = f"{match}"[1:-1]
         result_command=subprocess.check_output(command,shell=True)
-        conn.send(result_command)
+        conn.send(result_command+b'COMMAND')
         anthony.temp_memory.append({"role":"assistant","content":f"Выполнил команду: {result_command.decode('utf-8')}"})
         
 
@@ -63,7 +76,10 @@ def bot_system(res):
 while True:
     response = anthony.think(conn.recv(4096).decode('utf-8')).encode('utf-8')
     bot_system(response.decode('utf-8'))
-    if 1:
-        response = anthony.speak(response.decode('utf-8'))
-    conn.send(response+b'END')
+    
+    if 0:
+        response = anthony.speak(response.decode('utf-8'))+b'VOICE'
+    else:
+        response+=b''
+    conn.send(response)
 
