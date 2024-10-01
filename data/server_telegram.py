@@ -4,7 +4,7 @@ import socket
 
 def init(token):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(('0.0.0.0', 1363))
+    sock.connect(('0.0.0.0', 1369))
     bot = telebot.TeleBot(token)
 
 

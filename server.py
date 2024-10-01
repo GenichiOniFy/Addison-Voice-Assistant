@@ -37,13 +37,13 @@ def initialization():
     #CREAT ANTHONY
     global anthony
     important_memory = json.load(open('data/memory.json', 'r', encoding='utf-8'))
-    important_memory.append({"role":"user","content":f'Вот твой исходный код: {open("server.py", "r", encoding="utf-8").read()}'})
+    #important_memory.append({"role":"user","content":f'Вот твой исходный код: {open("server.py", "r", encoding="utf-8").read()}'})
     anthony = voice_assistant(llm, "anthony", "ru",important_memory=important_memory, tts_set=modelTTS)
 
 
     #INIT SERVER-SOCKET
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('0.0.0.0', 1363))
+    sock.bind(('0.0.0.0', 1369))
     sock.listen()
 
     
@@ -65,21 +65,29 @@ initialization()
 
 def bot_system(res):
     matches = re.findall(pattern, res)
+    fl=0
     for match in matches:
         command = f"{match}"[1:-1]
-        result_command=subprocess.check_output(command,shell=True)
-        conn.send(result_command+b'COMMAND')
-        anthony.temp_memory.append({"role":"assistant","content":f"Выполнил команду: {result_command.decode('utf-8')}"})
+        conn.send(f'Мне выполнить: {command}?'.encode('utf-8'))
+        ans = conn.recv(4096).decode('utf-8').lower()
+        if "да" in ans or "давай" in ans or "выполни" in ans:
+            result_command=subprocess.check_output(command,shell=True)
+            conn.send(result_command+b'COMMAND')
+            anthony.temp_memory.append({"role":"assistant","content":f"Выполнил команду: {result_command.decode('utf-8')}"})
+        fl=1
+    if fl:
+        return 1
         
 
 
 while True:
     response = anthony.think(conn.recv(4096).decode('utf-8')).encode('utf-8')
-    bot_system(response.decode('utf-8'))
+    fl=bot_system(response.decode('utf-8'))
     
-    if 0:
-        response = anthony.speak(response.decode('utf-8'))+b'VOICE'
-    else:
-        response+=b''
-    conn.send(response)
+    if not(fl):
+        if 0:
+            response = anthony.speak(response.decode('utf-8'))+b'VOICE'
+        else:
+            response+=b''
+        conn.send(response)
 
