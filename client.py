@@ -35,22 +35,31 @@ def initialization():
     recorder = PvRecorder(device_index=-1, frame_length=porcupine.frame_length)
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(('0.0.0.0', 1358))
+    sock.connect(('0.0.0.0', 1382))
 
     recorder.start()
 
 initialization()
 
-def getting_data():
+def getting_voice():
     global sock
+    fl=0
     voice_data=bytearray()
     while True:
         voice_bytes = sock.recv(4096)
-        if voice_bytes.endswith(b'END'):
-            voice_data.extend(voice_bytes[:-3])
+        if voice_bytes.endswith(b'VOICE'):
+            voice_data.extend(voice_bytes[:-5])
+            fl=1
+            break
+        elif voice_bytes.endswith(b'TEXT') or voice_bytes.endswith(b'COMMAND'):
             break
         voice_data.extend(voice_bytes)
-    return np.frombuffer(voice_data, dtype=np.float32)
+    if fl:
+        voice = np.frombuffer(voice_data, dtype=np.float32)
+        sd.play(voice,24000)
+        sd.wait()
+        voice_data=b'voice' 
+    return voice_data
 
     
 t=0
@@ -61,8 +70,7 @@ while True:
         recorder.stop()
         sock.send("Энтони".encode('utf-8'))
         voice = getting_voice()
-        sd.play(voice,24000)
-        sd.wait() 
+        print(voice.decode())
         recorder.start()
         t=time.time()
     while time.time()-t<=5:
@@ -75,8 +83,7 @@ while True:
             if len(text)>0:
                 sock.send(text.encode('utf-8'))
                 voice = getting_voice()
-                sd.play(voice,24000)
-                sd.wait()
+                print(voice.decode())
             t=time.time()
             recorder.start()
     
